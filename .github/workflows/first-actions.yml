@@ -2,7 +2,7 @@ name: Firs Workflow
 on: 
   push:
     branches-ignore:
-      - main
+      - mains
   workflow_dispatch:
 
 jobs:
