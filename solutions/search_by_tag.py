@@ -11,8 +11,9 @@ class SearchByTag:
     def search(self):
         # Generator: yields every item whose tags contain the query tag.
         # The file may be empty and an item may carry no "tags" key at all.
-        for item in self._data.get('items') or []:
-            if self.query in (item.get('tags') or []):
+        # Empty tuples are used as defaults so no list object is built here.
+        for item in self._data.get('items') or ():
+            if self.query in (item.get('tags') or ()):
                 yield item
 
     def first(self):
