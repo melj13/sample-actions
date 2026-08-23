@@ -8,9 +8,7 @@ import org.springframework.transaction.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Entity
@@ -54,7 +52,8 @@ class Task {
 
 @RestController
 class TaskController {
-    private static Logger log = Logger.getLogger("TaskController");
+    private static Logger log = Logger.getLogger("Solution");
+    // log.info("You can use 'log' for debug messages");
 
     private final TaskRepository taskRepository;
 
@@ -69,7 +68,7 @@ class TaskController {
     ResponseEntity<Object> update(@PathVariable("id") Long id,
                                   @RequestBody Map<String, Object> body) {
 
-        // Error precedence: existence of the task is checked before the body is validated.
+        // Error precedence: the task must exist before the body is validated.
         Optional<Task> found = taskRepository.findById(id);
         if (!found.isPresent()) {
             return error(HttpStatus.NOT_FOUND, "Cannot find task with given id");
@@ -102,4 +101,5 @@ class TaskController {
 }
 
 interface TaskRepository extends JpaRepository<Task, Long> {
+
 }
