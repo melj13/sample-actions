@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.*;
-import java.util.*;
 import java.util.logging.Logger;
 
 @Entity
@@ -16,13 +15,11 @@ import java.util.logging.Logger;
 class Task {
 
     @Id
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "description", nullable = false, length = 200)
+    @Column(nullable = false, length = 200)
     private String description;
 
-    @Column(name = "priority")
     private Long priority;
 
     public Long getId() {
@@ -50,10 +47,15 @@ class Task {
     }
 }
 
+record TaskPayload(String description, Long priority) {
+}
+
+record ErrorPayload(String message, int status) {
+}
+
 @RestController
 class TaskController {
     private static Logger log = Logger.getLogger("Solution");
-    // log.info("You can use 'log' for debug messages");
 
     private final TaskRepository taskRepository;
 
@@ -65,38 +67,24 @@ class TaskController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    ResponseEntity<Object> update(@PathVariable("id") Long id,
-                                  @RequestBody Map<String, Object> body) {
-
-        // Error precedence: the task must exist before the body is validated.
-        Optional<Task> found = taskRepository.findById(id);
-        if (!found.isPresent()) {
+    ResponseEntity<Object> update(@PathVariable Long id, @RequestBody TaskPayload payload) {
+        Task task = taskRepository.findById(id).orElse(null);
+        if (task == null) {
             return error(HttpStatus.NOT_FOUND, "Cannot find task with given id");
         }
-
-        Object description = body == null ? null : body.get("description");
-        if (description == null || description.toString().trim().isEmpty()) {
+        if (payload == null || payload.description() == null || payload.description().isBlank()) {
             return error(HttpStatus.BAD_REQUEST, "Task description is required");
         }
 
-        Object priority = body.get("priority");
-
-        Task task = found.get();
-        task.setDescription(description.toString());
-        task.setPriority(priority instanceof Number ? ((Number) priority).longValue() : null);
+        task.setDescription(payload.description());
+        task.setPriority(payload.priority());
         taskRepository.save(task);
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("description", task.getDescription());
-        response.put("priority", task.getPriority());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new TaskPayload(task.getDescription(), task.getPriority()));
     }
 
     private static ResponseEntity<Object> error(HttpStatus status, String message) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("message", message);
-        body.put("status", status.value());
-        return ResponseEntity.status(status).body(body);
+        return ResponseEntity.status(status).body(new ErrorPayload(message, status.value()));
     }
 }
 
