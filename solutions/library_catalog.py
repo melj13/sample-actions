@@ -15,22 +15,27 @@ class Item:
         return f"Item: {self.title} by {self.author} ({self.year})"
 
     def display_info(self):
-        print(f"Title: {self.title}")
-        print(f"Author: {self.author}")
-        print(f"Year: {self.year}")
+        return (
+            f"Title: {self.title}\n"
+            f"Author: {self.author}\n"
+            f"Year: {self.year}\n"
+        )
 
 
 class Book(Item):
 
-    def __init__(self, title, author, year, genre, isbn):
+    def __init__(self, title, author, year, genre, ISBN):
         super().__init__(title, author, year)
         self.genre = genre
-        self.isbn = isbn
+        self.ISBN = ISBN
+        self.isbn = ISBN
 
     def display_info(self):
-        super().display_info()
-        print(f"Genre: {self.genre}")
-        print(f"ISBN: {self.isbn}")
+        return (
+            super().display_info()
+            + f"Genre: {self.genre}\n"
+            + f"ISBN: {self.ISBN}\n"
+        )
 
 
 class DVD(Item):
@@ -40,5 +45,4 @@ class DVD(Item):
         self.duration = duration
 
     def display_info(self):
-        super().display_info()
-        print(f"Duration: {self.duration} minutes")
+        return super().display_info() + f"Duration: {self.duration} minutes\n"
