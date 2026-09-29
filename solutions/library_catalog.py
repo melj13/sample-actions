@@ -16,9 +16,9 @@ class Item:
 
     def display_info(self):
         return (
-            f"Title: {self.title}\n"
-            f"Author: {self.author}\n"
-            f"Year: {self.year}\n"
+            f"\nTitle: {self.title}"
+            f"\nAuthor: {self.author}"
+            f"\nYear: {self.year}\n"
         )
 
 
@@ -28,7 +28,6 @@ class Book(Item):
         super().__init__(title, author, year)
         self.genre = genre
         self.ISBN = ISBN
-        self.isbn = ISBN
 
     def display_info(self):
         return (
